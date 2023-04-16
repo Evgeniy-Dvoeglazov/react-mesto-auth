@@ -1,0 +1,18 @@
+.profile__avatar-btn {
+  background-color: rgba(0, 0, 0, .8);
+  background-image: url(../../../images/Pen.svg);
+  background-size: 26px 26px;
+  background-repeat: no-repeat;
+  background-position: center;
+  position: absolute;
+  left: 0;
+  top:0;
+  border: none;
+  padding: 0;
+  width: 120px;
+  height: 120px;
+  visibility: hidden;
+  opacity: 0;
+  transition:  visibility .2s, opacity .2s linear;
+  cursor: pointer;
+}

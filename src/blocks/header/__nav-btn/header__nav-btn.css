@@ -1,0 +1,29 @@
+.header__nav-btn {
+  font-size: 18px;
+  line-height: 1.22;
+  color: #fff;
+  margin: auto 0 auto 0;
+  padding: 0;
+  transition: opacity .2s linear;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.header__nav-btn:hover {
+  opacity: .6;
+}
+
+@media screen and (max-width: 767px) {
+
+  .header__nav-btn {
+    margin-right: 30px;
+  }
+}
+
+@media screen and (max-width: 424px) {
+
+  .header__nav-btn {
+    font-size: 14px;
+  }
+}

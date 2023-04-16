@@ -1,0 +1,21 @@
+.header {
+  grid-area: header;
+}
+
+@media screen and (max-width: 767px) {
+
+  .header {
+    grid-template-columns: 0 1fr 0;
+  }
+}
+
+@media screen and (max-width: 650px) {
+
+  .header {
+    display: grid;
+    grid-template-rows: auto auto;
+    grid-template-areas:
+      ". menu ."
+      ". content .";
+  }
+}

@@ -1,0 +1,10 @@
+.profile__description {
+  margin: auto 0 auto 30px;
+}
+
+@media screen and (max-width: 767px) {
+
+  .profile__description {
+    margin: auto 0;
+  }
+}

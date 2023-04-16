@@ -1,0 +1,16 @@
+.header__menu-btn {
+  display: block;
+  font-size: 18px;
+  line-height: 1.22;
+  color: #fff;
+  margin: 0 auto 40px auto;
+  padding: 0;
+  transition: opacity .2s linear;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.header__menu-btn:hover {
+  opacity: .6;
+}

@@ -1,0 +1,27 @@
+.page {
+  display: grid;
+  grid-template-columns: 50px 1fr 50px;
+  grid-template-rows: 119px 1fr 145px;
+  grid-template-areas:
+    ". header ."
+    ". main ."
+    ". footer .";
+  max-width: 980px;
+  font-family: 'Inter', 'Arial', 'Helvetica', sans-serif;
+  margin: 0 auto;
+  color: #fff;
+}
+
+@media screen and (max-width: 767px) {
+
+  .page {
+    grid-template-columns: 0 1fr 0;
+  }
+}
+
+@media screen and (max-width: 650px) {
+
+  .page {
+    grid-template-rows: auto 1fr 98px;
+  }
+}

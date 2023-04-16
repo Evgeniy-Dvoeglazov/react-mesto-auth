@@ -1,0 +1,10 @@
+.main {
+  grid-area: main;
+}
+
+@media screen and (max-width: 767px) {
+
+  .main {
+    margin: 0 19px;
+  }
+}

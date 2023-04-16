@@ -1,0 +1,19 @@
+.profile__avatar {
+  display: flex;
+  width: 120px;
+  height: 120px;
+  margin: auto 0;
+  position: relative;
+}
+
+.profile__avatar:hover .profile__avatar-btn {
+  visibility: visible;
+  opacity: 1;
+}
+
+@media screen and (max-width: 767px) {
+
+  .profile__avatar {
+    margin: 0 0 28px;
+  }
+}

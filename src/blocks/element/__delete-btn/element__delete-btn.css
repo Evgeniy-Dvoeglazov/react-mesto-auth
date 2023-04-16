@@ -1,0 +1,22 @@
+.element__delete-btn {
+  display: flex;
+  background-image: url(../../../images/basket.png);
+  background-color: transparent;
+  border: none;
+  padding: 0;
+  width: 18px;
+  height: 19px;
+  cursor: pointer;
+  transition: opacity .2s linear;
+  position: absolute;
+  top: 20px;
+  right: 20px;
+}
+
+.element__delete-btn_visible {
+  display: block;
+}
+
+.element__delete-btn:hover {
+  opacity: .5;
+}
