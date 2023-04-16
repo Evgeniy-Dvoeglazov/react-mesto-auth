@@ -13,10 +13,10 @@
   right: 20px;
 }
 
-.element__delete-btn_visible {
-  display: block;
-}
-
 .element__delete-btn:hover {
   opacity: .5;
+}
+
+.element__delete-btn_visible {
+  display: block;
 }

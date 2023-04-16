@@ -38,13 +38,13 @@ function PopupWithForm(props) {
       <div className="popup__container">
         <h2 className="popup__title">{props.title}</h2>
         <Form
-        children={props.children}
-        name={props.name}
-        onSubmit={props.onSubmit}
-        isValid={props.isValid}
-        isLoading={props.isLoading}
-        buttonText={props.buttonText}
-        formType="withPopup"
+          children={props.children}
+          name={props.name}
+          onSubmit={props.onSubmit}
+          isValid={props.isValid}
+          isLoading={props.isLoading}
+          buttonText={props.buttonText}
+          formType="withPopup"
         />
         <button className="popup__close-btn" onClick={props.onClose} id={`popup__close-btn_${props.name}`} type="button"
           aria-label="Кнопка закрытия формы"></button>

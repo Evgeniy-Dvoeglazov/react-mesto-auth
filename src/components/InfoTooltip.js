@@ -8,7 +8,7 @@ function InfoTooltip(props) {
 
   function handleCloseBtn() {
     props.onClose();
-    props.registrationSucces && navigate('/sign-in', {replace: true});
+    props.registrationSucces && navigate('/sign-in', { replace: true });
   }
 
   return (

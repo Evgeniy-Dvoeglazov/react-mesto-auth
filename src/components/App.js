@@ -35,11 +35,20 @@ function App() {
   const [headerEmail, setHeaderEmail] = useState('');
 
   const navigate = useNavigate();
-
   const currentLocation = useLocation();
+  const [width, setWidth] = useState(window.innerWidth);
+
+  //Создаем эффект, который будет отслеживать ширину окна.
+  //Далее мы сможем использовать это, чтобы дополнительный блок меню в шапке исчезал при увеличении ширины окна
 
   useEffect(() => {
-    tokenCheck();
+    const handleResize = (event) => {
+      setWidth(event.target.innerWidth);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
   }, []);
 
   useEffect(() => {
@@ -74,9 +83,6 @@ function App() {
 
   useEffect(() => {
     setIsLoading(true);
-    // const page = document.querySelector('.page');
-    // page.classList.add('page_off');
-
     api.getCardList()
       .then((res) => {
         setCards(res);
@@ -86,8 +92,11 @@ function App() {
       })
       .finally(() => {
         setIsLoading(false);
-        // page.classList.remove('page_off');
       });
+  }, []);
+
+  useEffect(() => {
+    tokenCheck();
   }, []);
 
   function tokenCheck() {
@@ -237,6 +246,7 @@ function App() {
           setHeaderEmail={setHeaderEmail}
           isLoading={isLoading}
           loggedIn={loggedIn}
+          width={width}
         />
         <Routes>
           <Route path="/" element={loggedIn ? <ProtectedRouteElement
@@ -251,7 +261,7 @@ function App() {
             cards={cards}
             onCardDelete={handleCardDeleteClick}
           /> : <Navigate to="/sign-in" replace />} />
-          <Route path="/sign-up" element={<Register submitSuccess={handleRegistrationSuccess} submitError={handleRegistrationError}/>} />
+          <Route path="/sign-up" element={<Register submitSuccess={handleRegistrationSuccess} submitError={handleRegistrationError} />} />
           <Route path="/sign-in" element={<Login handleLogin={handleLogin} tokenCheck={tokenCheck} isLoading={isLoading} />} />
         </Routes>
         {loggedIn && <Footer />}
@@ -288,9 +298,9 @@ function App() {
         />
 
         <InfoTooltip
-        isOpen={isRegisterPopupOpen}
-        registrationSucces = {registrationSucces}
-        onClose={closeAllPopups}
+          isOpen={isRegisterPopupOpen}
+          registrationSucces={registrationSucces}
+          onClose={closeAllPopups}
         />
       </div>
     </CurrentUserContext.Provider>
