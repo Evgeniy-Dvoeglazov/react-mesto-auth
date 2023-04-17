@@ -9,10 +9,7 @@ function Header(props) {
 
   function setNavigation() {
     if (props.headerLinkUrl !== '/sign-in' || '/sign-up') {
-      localStorage.removeItem('jwt');
-      navigate('/sign-in', { replace: true });
-      props.handleLogin(false);
-      props.setHeaderEmail('');
+      props.onSignOut(false);
       //Закрываем окно меню в шапке при выходе из системы
       setIsMenuOpen(false);
     }
@@ -23,10 +20,7 @@ function Header(props) {
   //Также пригодится для изменения иконки кнопки меню
 
   function openMenu() {
-    if (isMenuOpen) {
-      setIsMenuOpen(false);
-    }
-    else setIsMenuOpen(true);
+    setIsMenuOpen(!isMenuOpen);
   }
 
   return (

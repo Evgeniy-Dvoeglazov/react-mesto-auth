@@ -8,19 +8,7 @@ export const register = (password, email) => {
     },
     body: JSON.stringify({ password, email })
   })
-    .then((response) => {
-      try {
-        if (response.status === 200 || 201) {
-          return response.json();
-        }
-      } catch (e) {
-        return (e)
-      }
-    })
-    .then((res) => {
-      return res;
-    })
-    .catch((err) => console.log(err));
+    .then((res) => getResponse(res));
 };
 
 export const authorize = (password, email) => {
@@ -31,14 +19,14 @@ export const authorize = (password, email) => {
     },
     body: JSON.stringify({ password, email })
   })
-    .then((response => response.json()))
+    .then((res) => getResponse(res))
     .then((data) => {
       if (data.token) {
         localStorage.setItem('jwt', data.token);
         return data;
       }
-    })
-    .catch(err => console.log(err))
+    });
+
 };
 
 export const getContent = (token) => {
@@ -49,6 +37,12 @@ export const getContent = (token) => {
       'Authorization': `Bearer ${token}`
     }
   })
-    .then(res => res.json())
-    .then(data => data)
+    .then((res) => getResponse(res));
+};
+
+function getResponse(res) {
+  if (!res.ok) {
+    return Promise.reject(`Ошибка: ${res.status}`);
+  }
+  return res.json();
 }

@@ -1,6 +1,5 @@
 import Form from './Form';
 import { Link } from 'react-router-dom';
-import * as auth from '../auth.js';
 import { useForm } from 'react-hook-form';
 
 function Register(props) {
@@ -11,13 +10,7 @@ function Register(props) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    auth.register(getValues('password'), getValues('email'))
-      .then((res) => {
-        if (!res.data) {
-          props.submitError();
-        }
-        else props.submitSuccess();
-      });
+    props.onRegister(getValues('password'), getValues('email'));
   }
 
   return (

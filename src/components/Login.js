@@ -1,6 +1,4 @@
 import Form from './Form';
-import { useNavigate } from 'react-router-dom';
-import * as auth from '../auth.js';
 import { useForm } from 'react-hook-form';
 
 function Login(props) {
@@ -9,22 +7,12 @@ function Login(props) {
 
   const errorClassname = (name) => `popup__error ${errors[name] ? 'popup__error_visible' : ''}`;
 
-  const navigate = useNavigate();
-
-  const onLogin = (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     if (!getValues('email') || !getValues('password')) {
       return;
     }
-    auth.authorize(getValues('password'), getValues('email'))
-      .then((data) => {
-        if (data.token) {
-          props.handleLogin(true);
-          props.tokenCheck();
-          navigate('/', { replace: true });
-        }
-      })
-      .catch(err => console.log(err));
+    props.onLogin(getValues('password'), getValues('email'));
   }
 
   return (
@@ -35,7 +23,7 @@ function Login(props) {
         formType="withoutPopup"
         isValid={isValid}
         buttonText={"Войти"}
-        onSubmit={onLogin}
+        onSubmit={handleSubmit}
         children={
           <>
             <input className="form__input" name="email" type="email" placeholder="Email"

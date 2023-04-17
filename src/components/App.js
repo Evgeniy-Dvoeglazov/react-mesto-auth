@@ -9,12 +9,14 @@ import { api } from '../utils/Api';
 import { CurrentUserContext } from '../contexts/CurrentUserContext';
 import AddPlacePopup from './AddPlacePopup';
 import DeletePlacePopup from './DeletePlacePopup';
-import { Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
+import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import Login from './Login';
 import Register from './Register';
 import InfoTooltip from './InfoTooltip';
 import ProtectedRouteElement from './ProtectedRoute';
-import * as auth from '../auth.js';
+import * as auth from '../utils/auth.js';
+import regSuccess from '../images/reg-success.png';
+import regError from '../images/reg-error.png';
 
 function App() {
 
@@ -24,18 +26,16 @@ function App() {
   const [isImagePopupOpen, setIsImagePopupOpen] = useState(false);
   const [isDeletePlacePopupOpen, setIsDeletePlacePopupOpen] = useState(false);
   const [isRegisterPopupOpen, setIsRegisterPopupOpen] = useState(false);
-  const [registrationSucces, setRegistrationSucces] = useState(false);
   const [selectedCard, setSelectedCard] = useState({});
   const [currentUser, setCurrentUser] = useState({});
   const [cards, setCards] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [loggedIn, setLoggedIn] = useState(false);
-  const [headerLinkName, setHeaderLinkName] = useState('');
-  const [headerLinkUrl, setHeaderLinkUrl] = useState('');
   const [headerEmail, setHeaderEmail] = useState('');
+  const [authStatusText, setAuthStatusText] = useState('');
+  const [authStatusImage, setAuthStatusImage] = useState('');
 
   const navigate = useNavigate();
-  const currentLocation = useLocation();
   const [width, setWidth] = useState(window.innerWidth);
 
   //Создаем эффект, который будет отслеживать ширину окна.
@@ -52,65 +52,52 @@ function App() {
   }, []);
 
   useEffect(() => {
-    if (currentLocation.pathname === '/sign-up') {
-      setHeaderLinkName('Войти');
-    } else
-      if (currentLocation.pathname === '/sign-in') {
-        setHeaderLinkName('Регистрация');
-      } else
-        setHeaderLinkName('Выйти');
-  });
+    if (loggedIn) {
+      api.getUserInfo()
+        .then((res) => {
+          setCurrentUser(res);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+  }, [loggedIn]);
 
   useEffect(() => {
-    if (currentLocation.pathname === '/sign-up') {
-      setHeaderLinkUrl('/sign-in');
-    } else
-      if (currentLocation.pathname === '/sign-in') {
-        setHeaderLinkUrl('/sign-up');
-      } else
-        setHeaderLinkUrl('/sign-in');
-  });
-
-  useEffect(() => {
-    api.getUserInfo()
-      .then((res) => {
-        setCurrentUser(res);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }, []);
-
-  useEffect(() => {
-    setIsLoading(true);
-    api.getCardList()
-      .then((res) => {
-        setCards(res);
-      })
-      .catch((err) => {
-        console.log(err);
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
-  }, []);
+    if (loggedIn) {
+      api.getCardList()
+        .then((res) => {
+          setCards(res);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+  }, [loggedIn]);
 
   useEffect(() => {
     tokenCheck();
   }, []);
 
   function tokenCheck() {
-    if (localStorage.getItem('jwt')) {
-      const jwt = localStorage.getItem('jwt');
-      if (jwt) {
-        auth.getContent(jwt).then((res) => {
+    const jwt = localStorage.getItem('jwt');
+    if (jwt) {
+      setIsLoading(true);
+      auth.getContent(jwt)
+        .then((res) => {
           if (res) {
             setLoggedIn(true);
             setHeaderEmail(res.data.email);
             navigate("/", { replace: true });
           }
+        })
+        .catch((err) => {
+          console.log(err);
+          navigate("/sign-in", { replace: true })
+        })
+        .finally(() => {
+          setIsLoading(false);
         });
-      }
     }
   }
 
@@ -133,12 +120,14 @@ function App() {
 
   function handleRegistrationSuccess() {
     setIsRegisterPopupOpen(true);
-    setRegistrationSucces(true);
+    setAuthStatusText('Вы успешно зарегистрировались!');
+    setAuthStatusImage(regSuccess);
   }
 
   function handleRegistrationError() {
     setIsRegisterPopupOpen(true);
-    setRegistrationSucces(false);
+    setAuthStatusText('Что-то пошло не так! Попробуйте еще раз.');
+    setAuthStatusImage(regError);
   }
 
   function closeAllPopups() {
@@ -231,23 +220,72 @@ function App() {
       });
   }
 
-  function handleLogin(state) {
+  function handleLogout(state) {
+    localStorage.removeItem('jwt');
+    navigate('/sign-in', { replace: true });
     setLoggedIn(state);
+    setHeaderEmail('');
+  }
+
+  function handleRegister(password, email) {
+    auth.register(password, email)
+      .then((res) => {
+        if (res) {
+          handleRegistrationSuccess();
+          navigate('/sign-in', { replace: true });
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        handleRegistrationError();
+      });
+  }
+
+  function handleLogin(password, email) {
+    auth.authorize(password, email)
+      .then((data) => {
+        if (data.token) {
+          setLoggedIn(true);
+          setHeaderEmail(email);
+          navigate('/', { replace: true });
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        handleRegistrationError();
+      });
   }
 
   return (
     <CurrentUserContext.Provider value={currentUser}>
       <div className="page">
-        <Header
-          headerLinkName={headerLinkName}
-          headerLinkUrl={headerLinkUrl}
-          handleLogin={handleLogin}
-          headerEmail={headerEmail}
-          setHeaderEmail={setHeaderEmail}
-          isLoading={isLoading}
-          loggedIn={loggedIn}
-          width={width}
-        />
+        <Routes>
+          <Route path="/sign-in" element={<Header
+            headerLinkName="Регистрация"
+            headerLinkUrl="/sign-up"
+            onSignOut={handleLogout}
+            headerEmail={headerEmail}
+            isLoading={isLoading}
+            loggedIn={loggedIn}
+          />} />
+          <Route path="/sign-up" element={<Header
+            headerLinkName="Войти"
+            headerLinkUrl="/sign-in"
+            onSignOut={handleLogout}
+            headerEmail={headerEmail}
+            isLoading={isLoading}
+            loggedIn={loggedIn}
+          />} />
+          <Route path="/" element={<Header
+            headerLinkName="Выйти"
+            headerLinkUrl="/sign-in"
+            onSignOut={handleLogout}
+            headerEmail={headerEmail}
+            isLoading={isLoading}
+            loggedIn={loggedIn}
+            width={width}
+          />} />
+        </Routes>
         <Routes>
           <Route path="/" element={loggedIn ? <ProtectedRouteElement
             element={Main}
@@ -261,8 +299,8 @@ function App() {
             cards={cards}
             onCardDelete={handleCardDeleteClick}
           /> : <Navigate to="/sign-in" replace />} />
-          <Route path="/sign-up" element={<Register submitSuccess={handleRegistrationSuccess} submitError={handleRegistrationError} />} />
-          <Route path="/sign-in" element={<Login handleLogin={handleLogin} tokenCheck={tokenCheck} isLoading={isLoading} />} />
+          <Route path="/sign-up" element={<Register onRegister={handleRegister} />} />
+          <Route path="/sign-in" element={<Login onLogin={handleLogin} isLoading={isLoading} setHeaderEmail={setHeaderEmail} submitError={handleRegistrationError} />} />
         </Routes>
         {loggedIn && <Footer />}
         <EditProfilePopup
@@ -299,7 +337,8 @@ function App() {
 
         <InfoTooltip
           isOpen={isRegisterPopupOpen}
-          registrationSucces={registrationSucces}
+          authStatusText={authStatusText}
+          authStatusImage={authStatusImage}
           onClose={closeAllPopups}
         />
       </div>
